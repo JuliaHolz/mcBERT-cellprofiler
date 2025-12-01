@@ -44,13 +44,13 @@ class mcRNA_Trainer:
         self.train_dataset = Patient_level_dataset(
             prepare_dataset(train_files, multiprocess=True),
             select_gene_path=cfg.HIGHLY_VAR_GENES_PATH,
-            n_cells=1023,
+            n_cells=800,
             inference=True,
         )
         self.test_dataset = Patient_level_dataset(
             prepare_dataset(test_files, multiprocess=True),
             select_gene_path=cfg.HIGHLY_VAR_GENES_PATH,
-            n_cells=1023,
+            n_cells=800,
             inference=True,
         )
 

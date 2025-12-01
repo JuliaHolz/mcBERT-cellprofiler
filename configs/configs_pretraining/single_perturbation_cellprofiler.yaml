@@ -1,5 +1,5 @@
 HIGHLY_VAR_GENES_PATH: "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/generated/feat.csv"
-H5AD_FILES: "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/*.h5ad"
+H5AD_FILES: "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/standardized_originalfeat/DMSO/*.h5ad"
 
 modality: 'cellprofiler-features'
 device: 'cuda'

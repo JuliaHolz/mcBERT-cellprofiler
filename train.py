@@ -76,14 +76,14 @@ ds_train = Patient_level_dataset(
     df_train,
     select_gene_path=cfg.HIGHLY_VAR_GENES_PATH,
     inference=False,
-    n_cells=1023,
+    n_cells=800,
     oversampling=cfg.train.oversampling,
 )
 ds_val = Patient_level_dataset(
     df_val,
     select_gene_path=cfg.HIGHLY_VAR_GENES_PATH,
     inference=False,
-    n_cells=1023,
+    n_cells=800,
     oversampling=cfg.val.oversampling,
 )
 

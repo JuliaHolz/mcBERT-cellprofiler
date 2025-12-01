@@ -13,7 +13,7 @@ class Patient_level_dataset(Dataset):
         df,
         select_gene_path,
         inference=False,
-        n_cells=1023,
+        n_cells=800,
         oversampling=False,
         mlm_probability=0.15,
         random_cell_stratification=0.1,
@@ -64,7 +64,7 @@ class Patient_level_dataset(Dataset):
             :, self.select_genes
         ]
 
-        cell_selection_idx = self.stratified_cell_selection(idx_file)
+        cell_selection_idx = self.unstratified_cell_selection(idx_file)
         gene_selection = torch.tensor(idx_file.chunk_X(cell_selection_idx))
         idx_file.file.close()
 
@@ -84,7 +84,16 @@ class Patient_level_dataset(Dataset):
                 self.donor_disease_num[index],
                 self.donor_disease[index],
             )
-
+    def unstratified_cell_selection(self, h5ad_file: sc.AnnData) -> list:
+        cell_selection_idx = []
+        indices = np.arange(h5ad_file.n_obs)
+        cell_selection_idx.extend(
+                np.random.choice(
+                    indices,
+                    self.n_cells,
+                )
+            )
+        return cell_selection_idx
     def stratified_cell_selection(self, h5ad_file: sc.AnnData) -> list:
         """Stratified cell selection, to balance the dataset by selecting the same number of cells from each cell type.
         Using self.random_cell_stratification to add some randomness to the selection (10% by default)
