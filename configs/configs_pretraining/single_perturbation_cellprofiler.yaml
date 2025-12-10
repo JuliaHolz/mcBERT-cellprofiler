@@ -5,11 +5,11 @@ modality: 'cellprofiler-features'
 device: 'cuda'
 
 train:
-  log_dir: '...'          # ADAPT LOG DIRECTORY
-  checkpoints_dir: '...'  # ADAPT CHECKPOINTS DIRECTORY
+  log_dir: '/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_DMSO_only/logs'          # ADAPT LOG DIRECTORY
+  checkpoints_dir: '/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_DMSO_only/checkpoints'  # ADAPT CHECKPOINTS DIRECTORY
   batch_size: 16
   eval_batch_size: 16
-  num_epochs: 10
+  num_epochs: 50
   save_ckpt_freq: 2
   oversampling: false
 val:

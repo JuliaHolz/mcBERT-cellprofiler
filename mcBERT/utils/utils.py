@@ -41,11 +41,12 @@ def get_diseases(file: str) -> list:
         + "_"
         + h5ad_file.obs[patient_identifier].unique()[0]
     )
+    donor_id = h5ad_file.obs[patient_identifier].unique()[0]
     h5ad_file_name = Path(file).stem.split(".h5ad")[0]
 
     return (
         disease,
-        donor_id_file,
+        donor_id,
         len(h5ad_file.var.index),
         h5ad_file_name,
     )

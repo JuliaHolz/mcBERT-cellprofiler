@@ -27,11 +27,11 @@ class Patient_level_dataset(Dataset):
         self.df = df
 
         # Automatically detect the column name of the cell identifier from the given set of columns
-        self.cell_id_name = list(
-            set(sc.read_h5ad(df["file_path"][0], backed="r").obs.columns).union(
-                set(["mycelltypes", "Cell_Type", "cell_type"])
-            )
-        )[0]
+        #self.cell_id_name = list(
+        #    set(sc.read_h5ad(df["file_path"][0], backed="r").obs.columns).union(
+        #        set(["mycelltypes", "Cell_Type", "cell_type"])
+        #    )
+        #)[0]
 
         if oversampling:
             self.donor_oversampling()
