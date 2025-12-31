@@ -11,8 +11,7 @@ def get_knn_prediction(train_emd, val_emd, labels_train, labels_val):
     labels_train_sorted=list(labels_train[sort_train])
     hues = [list(labels_train[sort_train]) + list(labels_val)]
     styles = ["Train"] * len(labels_train) + ["Val"] * len(labels_val)
-    print("train labels", labels_train)
-    print("val labels", labels_val)
+    
     # Plot mean embeddings
     X = np.concatenate([train_emd[sort_train], val_emd])
     X_cosine_sim = cosine_similarity(X)
@@ -23,7 +22,6 @@ def get_knn_prediction(train_emd, val_emd, labels_train, labels_val):
     k=3
     nearest_idxs=np.argpartition(val_dists_noself, k)[:k]
     neighbor_labels = [labels_train_sorted[idx] for idx in nearest_idxs]
-    print("neighbor_labels")
     #default to the first nearest neighbor -- may want to mark as 3 way tie
     tie = True
     prediction = labels_train_sorted[nearest_idxs[0]]

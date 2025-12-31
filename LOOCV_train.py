@@ -28,9 +28,6 @@ set_seeds(42)
 After pre-processing all datasets and saving each donor individually, the model can be trained.
 Previous Pre-Training is recommended.
 """
-perturbation = "DMSO"
-H5AD_LOC = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/standardized_originalfeat/" + perturbation + "/*.h5ad"
-PRETRAIN_CHK = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_"+perturbation+"_only/checkpoints/50.pt"
 
 
 # Config file for training
@@ -40,10 +37,30 @@ parser.add_argument(
     type=str,
     help="path to yaml config file for fine-tuning training",
 )
+parser.add_argument(
+    "--perturb",
+    type=str,
+    help="perturbation name (autophagy, DMSO, H202, KPT or tunicamycin)",
+)
+
 args = parser.parse_args()
+perturbation = args.perturb
+PRETRAIN_FOLDER="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_"+perturbation+"_only"
+FINETUNE_FOLDER ="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/finetune_"+perturbation+"_only"
+H5AD_LOC = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/standardized_originalfeat/" + perturbation + "/*.h5ad"
+PRETRAIN_CHK = PRETRAIN_FOLDER+"/checkpoints/50.pt"
+
+if not os.path.exists(FINETUNE_FOLDER):
+        os.mkdir(FINETUNE_FOLDER)
 cfg = OmegaConf.load(args.config)
+cfg.model.pre_train_ckpt = PRETRAIN_CHK
+cfg.H5AD_FILES = H5AD_LOC
+print("finetune config", cfg)
+cfg_save_file = FINETUNE_FOLDER +"/cfg.yaml"
 
-
+with open(cfg_save_file, "w") as fp:
+    OmegaConf.save(config=cfg, f=fp.name)
+   
 
 # Load files and prepare dataset
 files = glob(H5AD_LOC)
@@ -141,7 +158,7 @@ for held_out in lines:
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=cfg.optimizer.lr, weight_decay=cfg.optimizer.weight_decay
     )
-    knn = KNeighborsClassifier(n_neighbors=3)
+
     writer = SummaryWriter(LOG_DIR)
 
     best_loss = np.inf

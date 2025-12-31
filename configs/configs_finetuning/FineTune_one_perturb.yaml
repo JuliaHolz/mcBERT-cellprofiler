@@ -7,9 +7,9 @@ train:
   checkpoints_dir: 'inferred'
   batch_size: 48
   eval_batch_size: 48
-  num_epochs: 500
-  save_ckpt_freq: 100
-  oversampling: false
+  num_epochs: 300
+  save_ckpt_freq: 500
+  oversampling: true
   
   no_test_dataset: true # if there is another dataset solely for testing purposes, set to false. Then, we use a 80 - 20 ratio for training and validation.
                         # Otherwise, we split the dataset in a 70 - 10 - 20 ratio for training, validation, testing respectively.
@@ -26,7 +26,7 @@ optimizer:
   lr: 1e-5
   weight_decay: 0.01
 model:
-  pre_train_ckpt: '/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_DMSO_only/checkpoints/50.pt' # ADAPT PRETRAINED MODEL PATH
+  pre_train_ckpt: 'inferred' # ADAPT PRETRAINED MODEL PATH
   vocab_size: 581         # 579 features + 1 CLS + 1 MSK
   embed_dim: 288
   hidden_size: 288

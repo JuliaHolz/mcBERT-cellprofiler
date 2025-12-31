@@ -10,10 +10,10 @@ train:
   batch_size: 16
   eval_batch_size: 16
   num_epochs: 50
-  save_ckpt_freq: 2
-  oversampling: false
-val:
+  save_ckpt_freq: 50
   oversampling: true
+val:
+  oversampling: false
 
 criterion:
   loss_beta: 4
