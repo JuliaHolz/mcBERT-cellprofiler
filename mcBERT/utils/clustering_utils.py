@@ -25,6 +25,26 @@ def get_plot_as_img(train_emd, val_emd, labels_train, labels_val):
     #prediction, prediction_matches, three_way_tie = get_KNN_umap(X_embedded[:-1, 0],X_embedded[:-1, 1],)
     return fig
 
+def get_plot_as_img_largerpts(train_emd, val_emd, labels_train, labels_val):
+    sort_train = np.argsort(labels_train)
+    hues = [list(labels_train[sort_train]) + list(labels_val)]
+    styles = ["Train"] * len(labels_train) + ["Val"] * len(labels_val)
+
+    # Plot mean embeddings
+    X = np.concatenate([train_emd[sort_train], val_emd])
+    X_cosine_sim = cosine_similarity(X)
+    cosine_dist = 1 - X_cosine_sim
+    cosine_dist = np.abs(cosine_dist)
+    # X_embedded = TSNE(metric="precomputed", init="random").fit_transform(cosine_dist)
+    X_embedded = UMAP(
+        n_components=2, init="random", random_state=0, metric="cosine", n_jobs=1
+    ).fit_transform(cosine_dist)
+    fig = plt.figure(figsize=(10, 10))
+    #print("hues", hues)
+    sns.scatterplot(x=X_embedded[:, 0], y=X_embedded[:, 1], hue=hues[0], style=styles,s=100)
+    #prediction, prediction_matches, three_way_tie = get_KNN_umap(X_embedded[:-1, 0],X_embedded[:-1, 1],)
+    return fig
+
 def get_KNN_umap(other_X, other_Y, other_labels, pt_X, pt_Y, pt_label):
     distances = []
     other_points = list(zip(other_X,other_Y))

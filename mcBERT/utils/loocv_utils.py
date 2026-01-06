@@ -52,7 +52,7 @@ def get_knn_prediction_platesep(epoch,train_emd, val_emd, labels_train, labels_v
     cosine_dist = 1 - X_cosine_sim
     cosine_dist = np.abs(cosine_dist)
     final_csv_string= ""
-    for index_in_slice, label in enumerate(labels_val):
+    for index_in_slice, true_val_label in enumerate(labels_val):
         print(label)
         print("line",lines_val[index_in_slice])
         index_in_dists = index_in_slice-len(labels_val)
@@ -72,7 +72,7 @@ def get_knn_prediction_platesep(epoch,train_emd, val_emd, labels_train, labels_v
             if(num_in_list>=2):
                 prediction = label
                 tie = False
-        prediction_matches = 1 if (prediction==labels_val[0]) else 0
+        prediction_matches = 1 if (prediction==true_val_label) else 0
         three_way_tie = 1 if tie else 0
         csv_string =f"{epoch},{prediction},{prediction_matches},{tie},{lines_val[index_in_slice]}\n" 
         final_csv_string=final_csv_string+csv_string
