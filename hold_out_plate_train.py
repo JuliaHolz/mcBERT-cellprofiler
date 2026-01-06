@@ -5,7 +5,7 @@ from glob import glob
 import numpy as np
 import torch
 from mcBERT.utils.clustering_utils import get_plot_as_img
-from mcBERT.utils.loocv_utils import get_knn_prediction
+from mcBERT.utils.loocv_utils import get_knn_prediction_platesep
 
 from mcBERT.utils.metrics import (
     calc_silhouette_score,
@@ -69,24 +69,17 @@ if cfg.train.exclude_dataset != "":
 df = prepare_dataset(files, multiprocess=True)
 if "exclude_diseases" in cfg.train:
     df = df[~df["disease"].isin(cfg.train.exclude_diseases)]
-#print("df head")
-#print(df.head())
-#print("df shape", df.shape)
-#print(df["donor_id"].iloc[0])
-#print(df["donor_id"].iloc[1])
-#print(df["donor_id"].iloc[2])
+
 
 # Drop all patients which disease only has one patient
-print("df1", df)
 df = df.groupby("disease").filter(lambda x: len(x) > 1)
-print("df", df)
+df=df[df['disease'] != 'sALS without NuP defects']
 #the only one this filters out is sALS without NuP defects (line CS2XWC)
 lines = np.unique(df["donor_id"])
-print("lines", lines)
-exit()
+plates=df['donor_id'].str.split("#").str.get(1).unique() 
 for held_out_plate in plates:
     print("TRAINING MODEL WITH THIS PLATE HELD OUT: ", held_out_plate)
-    PLATE_FOLDER = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/byplate_finetune_"+perturbation+"_only/"+ held_out_plate
+    PLATE_FOLDER = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/platesep_finetune_"+perturbation+"_only/"+ held_out_plate
     if not os.path.exists(PLATE_FOLDER):
         os.mkdir(PLATE_FOLDER)
     LOG_DIR = PLATE_FOLDER + "/logs"
@@ -108,11 +101,10 @@ for held_out_plate in plates:
         #df_train, df_val = train_test_split(
         #    df_use, test_size=0.125, stratify=df_use["disease"], random_state=42
         #)
-        df_train = df[df['plate_name'] != held_out_plate]
-        #print("train df", df_train)
-        df_val = df[df['donor_id'] == held_out_plate]
-        #print("val df", df_val)
-
+        train = df['donor_id'].str.split("#").str.get(1) != held_out_plate
+        val = df['donor_id'].str.split("#").str.get(1) == held_out_plate
+        df_train = df[train]
+        df_val = df[val]
     else:
         print("error testing dataset provided but testing only implemented for LOOCV")
         df_train, df_val = train_test_split(
@@ -125,7 +117,7 @@ for held_out_plate in plates:
         f"Using {len(df_train)} patients for training and {len(df_val)} patients for validation representing {len(df['disease'].unique())} unique disease"
     )
     print("Training diseases: ", df_train["disease"].unique())
-
+    print(df_train)
     ds_train = Patient_level_dataset(
         df_train,
         select_gene_path=cfg.HIGHLY_VAR_GENES_PATH,
@@ -179,7 +171,7 @@ for held_out_plate in plates:
     ##################
     for epoch in range(0, cfg.train.num_epochs + 1):
         running_loss = 0
-
+        print("training")
         model.train()
         tqdm_loader_train = tqdm(dataloader_train, total=len(dataloader_train))
 
@@ -217,6 +209,7 @@ for held_out_plate in plates:
                     :,
                 ] = x.detach().cpu()
                 train_diseases += label_names
+        print("evaluating")
 
         # Calculate embeddings for all validation samples
         # validation loop
@@ -289,16 +282,16 @@ for held_out_plate in plates:
             writer.add_figure("UMAP Plot", scatter_image, epoch)
             #add prediction for LOOCV
         #if cfg.train.knn_frequency!=0 and epoch % cfg.train.umap_frequency == 0:
-        prediction, right, tie = get_knn_prediction(
+        csv_string = get_knn_prediction_platesep(epoch,
             np.array(train_embeddings.cpu()),
             np.array(val_embeddings.cpu()),
             labels_train,
             labels_val,
+            df_val["donor_id"]
         )
         if cfg.train.knn_frequency!=0: # and epoch % cfg.train.knn_frequency== 0:
-            print(f"Predicted Genotype {prediction} for plate {held_out_plate}. Correct (0 no, 1 yes)? {right}, tie? {tie}")
-        writer.add_scalar("Left Out Prediction Correct", right)
-        csv_string =f"{epoch},{prediction},{right},{tie}\n" 
+            print("predictions", csv_string)
+        #writer.add_scalar("Left Out Prediction Correct", right)
         pred_file.write(csv_string)
 
             
