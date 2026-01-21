@@ -1,0 +1,1 @@
+python ./format_csv_to_h5ad.py -i /home/jholz/fraenkel_rotation/cellpainting_data/101625_up_to_1K.csv -o /home/jholz/fraenkel_rotation/testing_mcbert_final/cellpainting_data/standardized_originalfeat.h5ad -s standardize
