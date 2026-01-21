@@ -43,11 +43,30 @@ parser.add_argument(
     help="perturbation name (autophagy, DMSO, H202, KPT or tunicamycin)",
 )
 
+parser.add_argument(
+    "-p",
+    type=str,
+    help="pretraining checkpoint location",
+)
+
+parser.add_argument(
+    "-o",
+    type=str,
+    help="output folder",
+)
+
+parser.add_argument(
+    "-i",
+    type=str,
+    help="location of h5ad files",
+)
+
 args = parser.parse_args()
 perturbation = args.perturb
-PRETRAIN_FOLDER="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_"+perturbation+"_only"
-FINETUNE_FOLDER ="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/finetune_"+perturbation+"_only"
-H5AD_LOC = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/standardized_originalfeat/" + perturbation + "/*.h5ad"
+PRETRAIN_FOLDER=args.p
+FINETUNE_FOLDER =args.o+ "/finetune_"+perturbation+"_only"
+H5AD_LOC = args.i+"/*.h5ad"
+print(H5AD_LOC)
 PRETRAIN_CHK = PRETRAIN_FOLDER+"/checkpoints/50.pt"
 
 if not os.path.exists(FINETUNE_FOLDER):
@@ -56,6 +75,7 @@ cfg = OmegaConf.load(args.config)
 cfg.model.pre_train_ckpt = PRETRAIN_CHK
 cfg.H5AD_FILES = H5AD_LOC
 print("finetune config", cfg)
+cfg.HIGHLY_VAR_GENES_PATH = args.o + "/feat.csv"
 cfg_save_file = FINETUNE_FOLDER +"/cfg.yaml"
 
 with open(cfg_save_file, "w") as fp:
@@ -64,6 +84,7 @@ with open(cfg_save_file, "w") as fp:
 
 # Load files and prepare dataset
 files = glob(H5AD_LOC)
+print("files", files)
 if cfg.train.exclude_dataset != "":
     files = [file for file in files if cfg.train.exclude_dataset not in file]
 df = prepare_dataset(files, multiprocess=True)
@@ -78,11 +99,12 @@ if "exclude_diseases" in cfg.train:
 
 # Drop all patients which disease only has one patient
 df = df.groupby("disease").filter(lambda x: len(x) > 1)
+print("df", df)
 #the only one this filters out is sALS without NuP defects (line CS2XWC)
 lines = np.unique(df["donor_id"])
 for held_out in lines:
     print("TRAINING MODEL WITH THIS LINE HELD OUT: ", held_out)
-    LINE_FOLDER = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/finetune_"+perturbation+"_only/"+ held_out
+    LINE_FOLDER = args.o+"/finetune_"+perturbation+"_only/"+ held_out
     if not os.path.exists(LINE_FOLDER):
         os.mkdir(LINE_FOLDER)
     LOG_DIR = LINE_FOLDER + "/logs"
