@@ -66,7 +66,6 @@ perturbation = args.perturb
 PRETRAIN_FOLDER=args.p
 FINETUNE_FOLDER =args.o+ "/finetune_"+perturbation+"_only"
 H5AD_LOC = args.i+"/*.h5ad"
-print(H5AD_LOC)
 PRETRAIN_CHK = PRETRAIN_FOLDER+"/checkpoints/50.pt"
 
 if not os.path.exists(FINETUNE_FOLDER):

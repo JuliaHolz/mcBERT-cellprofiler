@@ -40,21 +40,43 @@ parser.add_argument(
     help="path to yaml config file for fine-tuning training",
 )
 
+parser.add_argument(
+    "-p",
+    type=str,
+    help="pretraining checkpoint location",
+)
+
+parser.add_argument(
+    "-o",
+    type=str,
+    help="output folder",
+)
+
+parser.add_argument(
+    "-i",
+    type=str,
+    help="location of h5ad files",
+)
+
 
 args = parser.parse_args()
-perturbation = "all_perturb"
-PRETRAIN_FOLDER="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_"+perturbation+"_only"
-FINETUNE_FOLDER ="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/finetune_"+perturbation+"_only"
-H5AD_LOC = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/standardized_originalfeat/" + perturbation + "/*.h5ad"
+PRETRAIN_FOLDER=args.p
+FINETUNE_FOLDER =args.o+ "/finetune_all_perturb"
+H5AD_LOC = args.i+"/*.h5ad"
+
 PRETRAIN_CHK = PRETRAIN_FOLDER+"/checkpoints/50.pt"
 
 if not os.path.exists(FINETUNE_FOLDER):
-        os.mkdir(FINETUNE_FOLDER)
+    os.mkdir(FINETUNE_FOLDER)
 cfg = OmegaConf.load(args.config)
 cfg.model.pre_train_ckpt = PRETRAIN_CHK
 cfg.H5AD_FILES = H5AD_LOC
+cfg.HIGHLY_VAR_GENES_PATH = args.o + "/feat.csv"
+
 print("finetune config", cfg)
 cfg_save_file = FINETUNE_FOLDER +"/cfg.yaml"
+
+
 
 with open(cfg_save_file, "w") as fp:
     OmegaConf.save(config=cfg, f=fp.name)
@@ -80,7 +102,7 @@ df = df.groupby("disease").filter(lambda x: len(x) > 1)
 lines = np.unique(df["donor_id"])
 for held_out in lines:
     print("TRAINING MODEL WITH THIS LINE HELD OUT: ", held_out)
-    LINE_FOLDER = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/finetune_"+perturbation+"_only/"+ held_out
+    LINE_FOLDER = args.o+"/finetune_all_perturb/"+ held_out
     if not os.path.exists(LINE_FOLDER):
         os.mkdir(LINE_FOLDER)
     LOG_DIR = LINE_FOLDER + "/logs"

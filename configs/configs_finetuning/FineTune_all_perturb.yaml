@@ -1,9 +1,7 @@
 
-
-
 train:
-  batch_size: 48
-  eval_batch_size: 48
+  batch_size: 4
+  eval_batch_size: 4
   num_epochs: 300
   save_ckpt_freq: 500
   oversampling: true
