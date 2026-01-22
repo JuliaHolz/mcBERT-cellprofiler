@@ -1,4 +1,4 @@
-name: pyctominer
+name: pycytominer
 channels:
   - conda-forge
   - defaults

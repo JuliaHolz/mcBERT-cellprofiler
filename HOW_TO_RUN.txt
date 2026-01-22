@@ -1,0 +1,18 @@
+Setting up environment
+I maintained two separate environments (pycytominer and mcBERT) while developing the two parts of the pipeline, which the scripts activate, but you will need to set these up to run the scripts as I have them written.
+They could likely be combined into one environment that can be used for running both, but that may involve python dependency debugging (ugh).
+
+I've included the .yamls for the conda environments.
+The mcBERT environment was created using the installation instructions from the mcBERT readme.
+The pycytominer environment has the pycytominer installed, as well as anndata and pandas.
+
+To train models you need to run one of the following scripts:
+1. run_all_steps_all_perturb.sh - trains a separate mcBERT instance for each perturbation, does LOOCV
+2. run_all_steps_all_perturb.sh - trains one model for all the perturbations combined
+3. run_all_steps_hold_out_plates_one_perturb.sh - trains a separate mcBERT instance for each perturbation, and holds out one plate at a time
+
+You will need to change the base_output variable and the input_csv variable based on where you want the output to be and where the cellprofiler output CSV is.
+
+Then to visualize results you can go through and run the cells in plot_predictions.
+
+Some parts of the pipeline (especially the format_csv_to_h5ad.py and the scripts for separating out donors/plates/treatments) have some things hardcoded based on particular column names/arrangements of columns, so they may need to be changed depending on the arrangement of the data file.

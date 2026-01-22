@@ -7,7 +7,7 @@ h5ad_out="$base_out/standardized_originalfeat.h5ad"
 source /home/jholz/.bashrc
 
 #convert our csv file to a h5ad file (comment out these lines if you've already run this step for another model in this folder)
-conda activate pyctominer
+conda activate pycytominer
 python ./format_csv_to_h5ad.py -i $input_csv -o $h5ad_out -s standardize
 
 conda activate mcBERT
