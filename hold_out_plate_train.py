@@ -42,12 +42,29 @@ parser.add_argument(
     type=str,
     help="perturbation name (autophagy, DMSO, H202, KPT or tunicamycin)",
 )
+parser.add_argument(
+    "-p",
+    type=str,
+    help="pretraining checkpoint location",
+)
+
+parser.add_argument(
+    "-o",
+    type=str,
+    help="output folder",
+)
+
+parser.add_argument(
+    "-i",
+    type=str,
+    help="location of h5ad files",
+)
 
 args = parser.parse_args()
 perturbation = args.perturb
-PRETRAIN_FOLDER="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_"+perturbation+"_only"
-FINETUNE_FOLDER ="/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/platesep_finetune_"+perturbation+"_only"
-H5AD_LOC = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/platesep_standardized_originalfeat/" + perturbation + "/*.h5ad"
+PRETRAIN_FOLDER=args.p
+FINETUNE_FOLDER =args.o+ "/platesep_finetune_"+perturbation+"_only"
+H5AD_LOC = args.i+"/*.h5ad"
 PRETRAIN_CHK = PRETRAIN_FOLDER+"/checkpoints/50.pt"
 
 if not os.path.exists(FINETUNE_FOLDER):
@@ -55,6 +72,8 @@ if not os.path.exists(FINETUNE_FOLDER):
 cfg = OmegaConf.load(args.config)
 cfg.model.pre_train_ckpt = PRETRAIN_CHK
 cfg.H5AD_FILES = H5AD_LOC
+cfg.HIGHLY_VAR_GENES_PATH = args.o + "/feat.csv"
+
 print("finetune config", cfg)
 cfg_save_file = FINETUNE_FOLDER +"/cfg.yaml"
 
@@ -79,7 +98,7 @@ lines = np.unique(df["donor_id"])
 plates=df['donor_id'].str.split("#").str.get(1).unique() 
 for held_out_plate in plates:
     print("TRAINING MODEL WITH THIS PLATE HELD OUT: ", held_out_plate)
-    PLATE_FOLDER = "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/platesep_finetune_"+perturbation+"_only/"+ held_out_plate
+    PLATE_FOLDER = args.o+"/platesep_finetune_"+perturbation+"_only/"+ held_out_plate
     if not os.path.exists(PLATE_FOLDER):
         os.mkdir(PLATE_FOLDER)
     LOG_DIR = PLATE_FOLDER + "/logs"
@@ -101,6 +120,7 @@ for held_out_plate in plates:
         #df_train, df_val = train_test_split(
         #    df_use, test_size=0.125, stratify=df_use["disease"], random_state=42
         #)
+        print()
         train = df['donor_id'].str.split("#").str.get(1) != held_out_plate
         val = df['donor_id'].str.split("#").str.get(1) == held_out_plate
         df_train = df[train]

@@ -23,7 +23,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", type=str, help="path to input (h5ad data)")
     parser.add_argument("-o", type=str, help="output folder (separated h5ad files)")
-    parser.add_argument("-p", type=str, help="name of column to predict/disease column (genotype for our data)")
     args = parser.parse_args()
 
 
@@ -40,7 +39,7 @@ if __name__ == "__main__":
     lines= data.obs["line"].astype(str)
     concatenated_series = lines.str.cat(plate_names, sep='#')
     data.obs[DONOR_COLUMN] = concatenated_series
-    data.obs[DISEASE_COLUMN] = data.obs[args.p]
+    data.obs[DISEASE_COLUMN] = data.obs["genotype"]
 
     #this is the step where mcBERT normally normalizes gene expression to sum to one, which we skip
     #sc.pp.normalize_total(data, target_sum=1, inplace=True)

@@ -27,7 +27,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", type=str, help="path to input (h5ad data)")
     parser.add_argument("-o", type=str, help="output folder (separated h5ad files)")
-    parser.add_argument("-p", type=str, help="name of column to predict/disease column (genotype for our data)")
     args = parser.parse_args()
 
 

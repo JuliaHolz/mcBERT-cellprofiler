@@ -1,5 +1,3 @@
-HIGHLY_VAR_GENES_PATH: "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/generated/feat.csv"
-H5AD_FILES: 'inferred'
 
 
 train:
