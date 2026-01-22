@@ -53,8 +53,6 @@ def get_knn_prediction_platesep(epoch,train_emd, val_emd, labels_train, labels_v
     cosine_dist = np.abs(cosine_dist)
     final_csv_string= ""
     for index_in_slice, true_val_label in enumerate(labels_val):
-        print(label)
-        print("line",lines_val[index_in_slice])
         index_in_dists = index_in_slice-len(labels_val)
         val_dists = cosine_dist[index_in_dists]
         val_dists_no_self = val_dists[:-num_val]
