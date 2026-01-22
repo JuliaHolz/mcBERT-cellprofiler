@@ -1,12 +1,8 @@
-HIGHLY_VAR_GENES_PATH: "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/generated/feat.csv"
-H5AD_FILES: "/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/h5ad_files/standardized_originalfeat/DMSO/*.h5ad"
 
 modality: 'cellprofiler-features'
 device: 'cuda'
 
 train:
-  log_dir: '/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_DMSO_only/logs'          # ADAPT LOG DIRECTORY
-  checkpoints_dir: '/home/jholz/fraenkel_rotation/mcBERT-cellprofiler/0utputs/pretrain_DMSO_only/checkpoints'  # ADAPT CHECKPOINTS DIRECTORY
   batch_size: 16
   eval_batch_size: 16
   num_epochs: 50
