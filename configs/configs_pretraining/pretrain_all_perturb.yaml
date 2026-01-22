@@ -1,0 +1,34 @@
+modality: 'cellprofiler-features'
+device: 'cuda'
+
+train:
+  batch_size: 4
+  eval_batch_size: 4
+  num_epochs: 50
+  save_ckpt_freq: 50
+  oversampling: true
+val:
+  oversampling: true
+
+criterion:
+  loss_beta: 4
+
+optimizer:
+  lr: 1e-5
+  weight_decay: 0.01
+
+dataset:
+  mlm_probability: 0.15
+
+model:
+  name: 'D2V_pretraining_cellprofiler'
+  vocab_size: 581               # 579 features + 1 CLS + 1 MSK
+  average_top_k_layers: 6 
+  embed_dim: 288
+  hidden_size: 288
+  num_hidden_layers: 12
+  num_attention_heads: 12
+  normalize_targets: true
+  ema_decay: 0.999
+  ema_end_decay: 0.9999
+  ema_anneal_end_step: 300000
